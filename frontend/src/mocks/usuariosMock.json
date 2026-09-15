@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "nome": "Administrador",
+    "email": "admin@estoque.com",
+    "senha": "admin123",
+    "perfil": "ADMIN"
+  },
+  {
+    "id": 2,
+    "nome": "Operador de Estoque",
+    "email": "operador@estoque.com",
+    "senha": "operador123",
+    "perfil": "OPERADOR"
+  }
+]
