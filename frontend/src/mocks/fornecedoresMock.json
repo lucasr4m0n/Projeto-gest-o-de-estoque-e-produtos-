@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "nome": "Ferragens Industrial LTDA",
+    "cnpj": "11.222.333/0001-81",
+    "email": "contato@ferragensindustrial.com",
+    "telefone": "(91) 3222-1000"
+  },
+  {
+    "id": 2,
+    "nome": "EletroSul Distribuidora",
+    "cnpj": "45.678.901/0001-75",
+    "email": "vendas@eletrosul.com",
+    "telefone": "(91) 3333-2000"
+  },
+  {
+    "id": 3,
+    "nome": "HidroMax Componentes",
+    "cnpj": "98.765.432/0001-98",
+    "email": "comercial@hidromax.com",
+    "telefone": "(91) 3444-3000"
+  },
+  {
+    "id": 4,
+    "nome": "Protecao Total EPIs",
+    "cnpj": "12.345.678/0001-95",
+    "email": "atendimento@protecaototal.com",
+    "telefone": "(91) 3555-4000"
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "produtoId": 1,
+    "produtoNome": "Furadeira de Impacto 750W",
+    "tipo": "ENTRADA",
+    "quantidade": 15,
+    "justificativa": "Compra inicial - pedido 1001",
+    "data": "2025-08-01T09:15:00",
+    "usuario": "Administrador"
+  },
+  {
+    "id": 2,
+    "produtoId": 1,
+    "produtoNome": "Furadeira de Impacto 750W",
+    "tipo": "SAIDA",
+    "quantidade": 3,
+    "justificativa": "Requisicao manutencao predial",
+    "data": "2025-08-05T14:30:00",
+    "usuario": "Operador de Estoque"
+  },
+  {
+    "id": 3,
+    "produtoId": 2,
+    "produtoNome": "Cabo Flexivel 2,5mm (rolo 100m)",
+    "tipo": "SAIDA",
+    "quantidade": 5,
+    "justificativa": "Obra ampliacao almoxarifado",
+    "data": "2025-08-10T10:00:00",
+    "usuario": "Operador de Estoque"
+  },
+  {
+    "id": 4,
+    "produtoId": 3,
+    "produtoNome": "Disjuntor Bipolar 40A",
+    "tipo": "ENTRADA",
+    "quantidade": 40,
+    "justificativa": "Reposicao de estoque",
+    "data": "2025-08-12T08:45:00",
+    "usuario": "Administrador"
+  },
+  {
+    "id": 5,
+    "produtoId": 6,
+    "produtoNome": "Luva de Vaqueta (par)",
+    "tipo": "SAIDA",
+    "quantidade": 17,
+    "justificativa": "Distribuicao para equipe de campo",
+    "data": "2025-08-18T16:20:00",
+    "usuario": "Operador de Estoque"
+  }
+]

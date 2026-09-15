@@ -1,0 +1,30 @@
+module.exports = {
+  root: true,
+  env: { browser: true, es2021: true, node: true },
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:react-hooks/recommended',
+  ],
+  ignorePatterns: ['dist', 'coverage', 'node_modules', '.eslintrc.cjs'],
+  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+  settings: { react: { version: 'detect' } },
+  plugins: ['react-refresh'],
+  globals: {
+    describe: 'readonly',
+    it: 'readonly',
+    test: 'readonly',
+    expect: 'readonly',
+    jest: 'readonly',
+    beforeEach: 'readonly',
+    afterEach: 'readonly',
+    beforeAll: 'readonly',
+    afterAll: 'readonly',
+  },
+  rules: {
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    'react/prop-types': 'off',
+    'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+  },
+};
