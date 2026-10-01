@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.OffsetDateTime;
 
 @Entity
+@Table(name =  "tb_pedido_compra")
 @Getter
 @Setter
 @NoArgsConstructor
