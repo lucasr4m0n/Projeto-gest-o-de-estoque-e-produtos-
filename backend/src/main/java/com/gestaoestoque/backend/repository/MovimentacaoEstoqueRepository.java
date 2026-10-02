@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-
 public interface MovimentacaoEstoqueRepository extends JpaRepository<MovimentacaoEstoque, Long> {
 
-    List<MovimentacaoEstoqueRepository> findByProdutoIdOrderByDataHoraDesc(Long produtoId);
+    List<MovimentacaoEstoque> findByProdutoIdOrderByDataHoraDesc(Long produtoId);
 
+    List<MovimentacaoEstoque> findAllByOrderByDataHoraDesc();
 }
