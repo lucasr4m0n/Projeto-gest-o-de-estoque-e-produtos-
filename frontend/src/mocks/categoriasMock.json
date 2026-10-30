@@ -1,7 +1,0 @@
-[
-  { "id": 1, "nome": "Ferramentas", "descricao": "Ferramentas manuais e eletricas" },
-  { "id": 2, "nome": "Eletrica", "descricao": "Componentes e materiais eletricos" },
-  { "id": 3, "nome": "Hidraulica", "descricao": "Conexoes, tubos e valvulas" },
-  { "id": 4, "nome": "EPI", "descricao": "Equipamentos de protecao individual" },
-  { "id": 5, "nome": "Escritorio", "descricao": "Material de escritorio e consumo" }
-]

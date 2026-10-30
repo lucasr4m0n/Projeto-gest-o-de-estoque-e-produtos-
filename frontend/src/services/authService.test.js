@@ -9,24 +9,41 @@ import { TOKEN_KEY, USER_KEY } from './storageKeys.js';
 
 beforeEach(() => {
   localStorage.clear();
+  jest.restoreAllMocks();
 });
 
 describe('login', () => {
   it('autentica credenciais validas', async () => {
-    const result = await login('admin@estoque.com', 'admin123');
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        token: 'fake-jwt-token-123',
+        tipo: 'Bearer',
+        nome: 'Administrador do Sistema',
+        email: 'admin@gestao.com',
+        perfil: 'ADMIN'
+      })
+    });
+
+    const result = await login('admin@gestao.com', '123456');
     expect(result.token).toBeTruthy();
-    expect(result.usuario.email).toBe('admin@estoque.com');
+    expect(result.usuario.email).toBe('admin@gestao.com');
     expect(result.usuario.perfil).toBe('ADMIN');
   });
 
   it('rejeita credenciais invalidas', async () => {
-    await expect(login('admin@estoque.com', 'errada')).rejects.toThrow(/invalidas/i);
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 401
+    });
+
+    await expect(login('admin@gestao.com', 'senhaerrada')).rejects.toThrow();
   });
 });
 
 describe('sessao', () => {
   it('persiste, recupera e limpa a sessao', () => {
-    const user = { id: 1, nome: 'Admin', email: 'a@a.com', perfil: 'ADMIN' };
+    const user = { nome: 'Admin', email: 'admin@gestao.com', perfil: 'ADMIN' };
     persistSession('token123', user);
 
     expect(localStorage.getItem(TOKEN_KEY)).toBe('token123');
