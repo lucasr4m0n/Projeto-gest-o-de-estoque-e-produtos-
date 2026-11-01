@@ -1,29 +1,37 @@
-import usuariosMock from '../mocks/usuariosMock.json';
-import { mockResponse, mockError } from './mockAdapter.js';
 import { TOKEN_KEY, USER_KEY } from './storageKeys.js';
 
-// Fase 1: valida credenciais contra usuariosMock.json.
-// Fase 2 (Semana 5): substituir por POST em /auth/login via api.js.
+const API_URL = 'http://localhost:8090/api';
+
 export async function login(email, senha) {
-  const usuario = usuariosMock.find(
-    (u) => u.email.toLowerCase() === String(email).toLowerCase() && u.senha === senha,
-  );
+  try {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, senha }),
+    });
 
-  if (!usuario) {
-    return mockError('Credenciais invalidas.', 401);
+    if (!response.ok) {
+      throw new Error('E-mail ou senha inválidos.');
+    }
+
+    const data = await response.json();
+
+    // O back-end retorna: { token, tipo, nome, email, perfil }
+    const perfilData = {
+      nome: data.nome,
+      email: data.email,
+      perfil: data.perfil,
+    };
+
+    return { 
+      token: data.token, 
+      usuario: perfilData 
+    };
+  } catch (error) {
+    throw new Error(error.message || 'Falha ao conectar com o servidor.');
   }
-
-  // Token simulado. Em producao, e emitido pelo Spring Security (JWT).
-  const fakeToken = `mock-jwt.${btoa(usuario.email)}.${Date.now()}`;
-  const perfilData = {
-    id: usuario.id,
-    nome: usuario.nome,
-    email: usuario.email,
-    perfil: usuario.perfil,
-  };
-
-  await mockResponse(true);
-  return { token: fakeToken, usuario: perfilData };
 }
 
 export function persistSession(token, usuario) {

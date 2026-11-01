@@ -1,31 +1,21 @@
-import categoriasMock from '../mocks/categoriasMock.json';
-import { mockResponse, mockError } from './mockAdapter.js';
-
-let categorias = JSON.parse(JSON.stringify(categoriasMock));
-let nextId = Math.max(...categorias.map((c) => c.id), 0) + 1;
+import api from './api.js';
 
 export async function listarCategorias() {
-  return mockResponse(categorias);
+  const response = await api.get('/categorias');
+  return response.data;
 }
 
 export async function criarCategoria(dados) {
-  const nova = { id: nextId, ...dados };
-  nextId += 1;
-  categorias = [...categorias, nova];
-  return mockResponse(nova);
+  const response = await api.post('/categorias', dados);
+  return response.data;
 }
 
 export async function atualizarCategoria(id, dados) {
-  const idx = categorias.findIndex((c) => c.id === Number(id));
-  if (idx === -1) return mockError('Categoria nao encontrada.', 404);
-  const atualizada = { ...categorias[idx], ...dados };
-  categorias = categorias.map((c) => (c.id === Number(id) ? atualizada : c));
-  return mockResponse(atualizada);
+  const response = await api.put(`/categorias/${id}`, dados);
+  return response.data;
 }
 
 export async function removerCategoria(id) {
-  const idx = categorias.findIndex((c) => c.id === Number(id));
-  if (idx === -1) return mockError('Categoria nao encontrada.', 404);
-  categorias = categorias.filter((c) => c.id !== Number(id));
-  return mockResponse({ id: Number(id) });
+  const response = await api.delete(`/categorias/${id}`);
+  return response.data;
 }

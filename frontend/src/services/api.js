@@ -3,10 +3,23 @@ import { TOKEN_KEY, USER_KEY } from './storageKeys.js';
 
 export { TOKEN_KEY, USER_KEY };
 
-// URL base da API (Spring Boot). Definida em .env como VITE_API_URL.
-const baseURL =
-  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) ||
-  'http://localhost:8080/api';
+// URL base segura para o Vite e compatível com o Jest
+let baseURL = 'http://localhost:8090/api';
+
+if (typeof process !== 'undefined' && process.env && process.env.VITE_API_URL) {
+  baseURL = process.env.VITE_API_URL;
+} else {
+  try {
+    // Isola o import.meta para o Jest não falhar no parse estático
+    const getMetaEnv = new Function('return typeof import.meta !== "undefined" ? import.meta.env : undefined');
+    const env = getMetaEnv();
+    if (env && env.VITE_API_URL) {
+      baseURL = env.VITE_API_URL;
+    }
+  } catch (e) {
+    // Ignora se não suportado
+  }
+}
 
 const api = axios.create({ baseURL });
 

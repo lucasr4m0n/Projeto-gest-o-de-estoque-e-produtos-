@@ -1,50 +1,51 @@
 import { listarMovimentacoes, registrarMovimentacao } from './movimentacaoService.js';
-import { obterProduto } from './produtoService.js';
+import api from './api.js';
 
-describe('movimentacaoService', () => {
-  it('lista o historico ordenado por data (mais recente primeiro)', async () => {
-    const lista = await listarMovimentacoes();
-    expect(lista.length).toBeGreaterThan(0);
-    for (let i = 1; i < lista.length; i += 1) {
-      expect(new Date(lista[i - 1].data) >= new Date(lista[i].data)).toBe(true);
-    }
+// Mock do cliente Axios centralizado
+jest.mock('./api.js', () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+  patch: jest.fn(),
+}));
+
+describe('movimentacaoService (com Axios Mockado)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('registra ENTRADA e credita o saldo', async () => {
-    const antes = await obterProduto(1);
-    await registrarMovimentacao({
+  it('lista o historico de movimentacoes da API', async () => {
+    const mockMovimentacoes = [
+      {
+        id: 1,
+        produtoId: 1,
+        produtoNome: 'Furadeira',
+        tipo: 'ENTRADA',
+        quantidade: 5,
+        data: '2026-10-01T10:00:00Z',
+      },
+    ];
+    api.get.mockResolvedValueOnce({ data: mockMovimentacoes });
+
+    const lista = await listarMovimentacoes();
+    expect(api.get).toHaveBeenCalledWith('/movimentacoes');
+    expect(lista).toEqual(mockMovimentacoes);
+  });
+
+  it('registra uma nova movimentacao (ENTRADA ou SAIDA)', async () => {
+    const dadosMov = {
       produtoId: 1,
       tipo: 'ENTRADA',
       quantidade: 5,
-      justificativa: 'teste',
+      justificativa: 'Reposição de stock',
       usuario: 'Tester',
-    });
-    const depois = await obterProduto(1);
-    expect(depois.saldoAtual).toBe(antes.saldoAtual + 5);
-  });
+    };
+    const mockResposta = { id: 10, ...dadosMov, data: '2026-10-02T12:00:00Z' };
+    api.post.mockResolvedValueOnce({ data: mockResposta });
 
-  it('registra SAIDA valida e debita o saldo', async () => {
-    const antes = await obterProduto(1);
-    await registrarMovimentacao({
-      produtoId: 1,
-      tipo: 'SAIDA',
-      quantidade: 2,
-      justificativa: 'teste',
-      usuario: 'Tester',
-    });
-    const depois = await obterProduto(1);
-    expect(depois.saldoAtual).toBe(antes.saldoAtual - 2);
-  });
-
-  it('bloqueia SAIDA superior ao saldo (RN-F02)', async () => {
-    await expect(
-      registrarMovimentacao({ produtoId: 1, tipo: 'SAIDA', quantidade: 99999 }),
-    ).rejects.toThrow(/indisponivel/i);
-  });
-
-  it('bloqueia quantidade invalida em ENTRADA', async () => {
-    await expect(
-      registrarMovimentacao({ produtoId: 1, tipo: 'ENTRADA', quantidade: 0 }),
-    ).rejects.toThrow(/maior que zero/i);
+    const novaMovimentacao = await registrarMovimentacao(dadosMov);
+    expect(api.post).toHaveBeenCalledWith('/movimentacoes', dadosMov);
+    expect(novaMovimentacao).toEqual(mockResposta);
   });
 });
