@@ -19,14 +19,16 @@ import { formatCurrency, formatDate } from '../../utils/formatters.js';
 import { isPositiveNumber } from '../../utils/validators.js';
 
 const STATUS_TONE = {
-  PENDENTE: 'warn',
+  RASCUNHO: 'neutral',
+  SOLICITADO: 'warn',
   APROVADO: 'neutral',
   ENTREGUE: 'success',
   CANCELADO: 'danger',
 };
 
 const PROXIMO_STATUS = {
-  PENDENTE: ['APROVADO', 'CANCELADO'],
+  RASCUNHO: ['SOLICITADO', 'CANCELADO'],
+  SOLICITADO: ['APROVADO', 'CANCELADO'],
   APROVADO: ['ENTREGUE', 'CANCELADO'],
   ENTREGUE: [],
   CANCELADO: [],
@@ -141,7 +143,7 @@ export default function Compras() {
       header: 'Acoes',
       render: (p) => (
         <div className="flex flex-wrap gap-2">
-          {PROXIMO_STATUS[p.status].map((s) => (
+          {(PROXIMO_STATUS[p.status] || []).map((s) => (
             <Button
               key={s}
               variant={s === 'CANCELADO' ? 'ghost' : 'secondary'}
@@ -150,12 +152,15 @@ export default function Compras() {
               loading={statusEmAtualizacao === `${p.id}:${s}`}
               disabled={Boolean(statusEmAtualizacao)}
             >
+              {s === 'SOLICITADO' && 'Solicitar'}
               {s === 'APROVADO' && 'Aprovar'}
               {s === 'ENTREGUE' && 'Marcar entregue'}
               {s === 'CANCELADO' && 'Cancelar'}
             </Button>
           ))}
-          {PROXIMO_STATUS[p.status].length === 0 && <span className="text-xs text-base-400">-</span>}
+          {(PROXIMO_STATUS[p.status] || []).length === 0 && (
+            <span className="text-xs text-base-400">-</span>
+          )}
         </div>
       ),
     },

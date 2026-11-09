@@ -49,8 +49,19 @@ describe('dashboardService (com Serviços Mockados)', () => {
     expect(Array.isArray(dados.movimentacaoPorDia)).toBe(true);
 
     // Valida regras de negócio consolidadas
-    expect(dados.cards.produtosCriticos).toBeGreaterThan(0); // O 'Cabo Flexivel' está crítico (saldo 2 < min 5)
-    expect(dados.cards.totalEstocado).toBe(22); // 2 + 20
-    expect(dados.cards.pedidosPendentes).toBe(1); // Pedido com status SOLICITADO
+    expect(dados.cards.totalEstocado).toBe(22);          // 2 + 20
+    expect(dados.cards.valorInvestido).toBe(1020);       // 2*10 + 20*50
+    expect(dados.cards.produtosCriticos).toBe(1);        // só o Cabo Flexivel (2 <= 5)
+    expect(dados.cards.pedidosPendentes).toBe(1);
+
+    expect(dados.criticos).toHaveLength(1);
+    expect(dados.criticos[0].nome).toBe('Cabo Flexivel');
+
+    expect(dados.estoquePorCategoria).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ categoria: 'Elétrica', quantidade: 2 }),
+        expect.objectContaining({ categoria: 'Segurança', quantidade: 20 }),
+      ]),
+    );
   });
 });

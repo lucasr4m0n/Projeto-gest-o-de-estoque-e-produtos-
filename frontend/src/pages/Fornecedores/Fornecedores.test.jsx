@@ -45,7 +45,7 @@ describe('Fornecedores', () => {
     expect(fornService.criarFornecedor).not.toHaveBeenCalled();
   });
 
-  it('cria fornecedor com dados validos', async () => {
+    it('cria fornecedor com dados validos', async () => {
     renderWithProviders(<Fornecedores />);
     await screen.findByText('Ferragens Industrial');
 
@@ -62,5 +62,8 @@ describe('Fornecedores', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
 
     await waitFor(() => expect(fornService.criarFornecedor).toHaveBeenCalledTimes(1));
+    expect(fornService.criarFornecedor).toHaveBeenCalledWith(
+      expect.objectContaining({ nome: 'Nova Empresa', email: 'valido@x.com' }),
+    );
   });
 });

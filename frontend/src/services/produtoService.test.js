@@ -5,10 +5,9 @@ import {
   atualizarProduto,
   inativarProduto,
 } from './produtoService.js';
-import api from '../../src/services/api.js';
+import api from './api.js';
 
-// Mock do cliente Axios centralizado
-jest.mock('../../src/services/api.js', () => ({
+jest.mock('./api.js', () => ({
   get: jest.fn(),
   post: jest.fn(),
   put: jest.fn(),

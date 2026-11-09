@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../../test-utils.jsx';
 import Dashboard from './Dashboard.jsx';
 import * as dashService from '../../services/dashboardService.js';
@@ -31,5 +31,16 @@ describe('Dashboard', () => {
   it('lista produtos criticos', async () => {
     renderWithProviders(<Dashboard />);
     expect(await screen.findByText('Cabo Flexivel')).toBeInTheDocument();
+  });
+
+    it('exibe erro e permite tentar novamente', async () => {
+    dashService.obterIndicadores.mockRejectedValueOnce(new Error('Falha de rede'));
+    renderWithProviders(<Dashboard />);
+    expect(
+      await screen.findByText('Nao foi possivel carregar o dashboard.'),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }));
+    expect(await screen.findByText('Total estocado (itens)')).toBeInTheDocument();
   });
 });
