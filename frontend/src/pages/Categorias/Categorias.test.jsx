@@ -39,5 +39,8 @@ describe('Categorias', () => {
     fireEvent.change(screen.getByLabelText('Nome'), { target: { value: 'EPI' } });
     fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
     await waitFor(() => expect(catService.criarCategoria).toHaveBeenCalledTimes(1));
+    expect(catService.criarCategoria).toHaveBeenCalledWith(
+      expect.objectContaining({ nome: 'EPI' }),
+    );
   });
 });

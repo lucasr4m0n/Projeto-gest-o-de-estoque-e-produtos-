@@ -20,6 +20,7 @@ module.exports = {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(png|jpg|jpeg|gif|svg|webp)$': '<rootDir>/src/__mocks__/fileMock.js',
     '^recharts$': '<rootDir>/src/__mocks__/rechartsMock.jsx',
+    '^\\./env\\.js$': '<rootDir>/src/__mocks__/envMock.js',
   },
   testMatch: ['<rootDir>/src/**/*.test.{js,jsx}'],
   collectCoverageFrom: [
@@ -30,7 +31,7 @@ module.exports = {
     '!src/mocks/**',
     '!src/__mocks__/**',
     '!src/assets/**',
-    '!src/services/api.js',
+    '!src/services/env.js',
   ],
   coverageThreshold: {
     global: {

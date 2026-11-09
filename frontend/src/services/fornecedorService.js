@@ -1,31 +1,21 @@
-import fornecedoresMock from '../mocks/fornecedoresMock.json';
-import { mockResponse, mockError } from './mockAdapter.js';
-
-let fornecedores = JSON.parse(JSON.stringify(fornecedoresMock));
-let nextId = Math.max(...fornecedores.map((f) => f.id), 0) + 1;
+import api from './api.js';
 
 export async function listarFornecedores() {
-  return mockResponse(fornecedores);
+  const response = await api.get('/fornecedores');
+  return response.data;
 }
 
 export async function criarFornecedor(dados) {
-  const novo = { id: nextId, ...dados };
-  nextId += 1;
-  fornecedores = [...fornecedores, novo];
-  return mockResponse(novo);
+  const response = await api.post('/fornecedores', dados);
+  return response.data;
 }
 
 export async function atualizarFornecedor(id, dados) {
-  const idx = fornecedores.findIndex((f) => f.id === Number(id));
-  if (idx === -1) return mockError('Fornecedor nao encontrado.', 404);
-  const atualizado = { ...fornecedores[idx], ...dados };
-  fornecedores = fornecedores.map((f) => (f.id === Number(id) ? atualizado : f));
-  return mockResponse(atualizado);
+  const response = await api.put(`/fornecedores/${id}`, dados);
+  return response.data;
 }
 
 export async function removerFornecedor(id) {
-  const idx = fornecedores.findIndex((f) => f.id === Number(id));
-  if (idx === -1) return mockError('Fornecedor nao encontrado.', 404);
-  fornecedores = fornecedores.filter((f) => f.id !== Number(id));
-  return mockResponse({ id: Number(id) });
+  const response = await api.delete(`/fornecedores/${id}`);
+  return response.data;
 }

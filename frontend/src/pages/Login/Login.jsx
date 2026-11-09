@@ -77,7 +77,7 @@ export default function Login() {
         </form>
 
         <p className="mt-4 text-center text-xs text-base-500">
-          Teste: admin@estoque.com / admin123
+          {/* Teste: admin@estoque.com / admin123 */}
         </p>
       </div>
     </div>

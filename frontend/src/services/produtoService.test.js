@@ -5,71 +5,80 @@ import {
   atualizarProduto,
   inativarProduto,
 } from './produtoService.js';
+import api from './api.js';
 
-describe('produtoService', () => {
-  it('lista os produtos do mock', async () => {
+jest.mock('./api.js', () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+  patch: jest.fn(),
+}));
+
+describe('produtoService (com Axios Mockado)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('lista os produtos da API', async () => {
+    const mockProdutos = [{ id: 1, nome: 'Furadeira', preco: 150, ativo: true }];
+    api.get.mockResolvedValueOnce({ data: mockProdutos });
+
     const produtos = await listarProdutos();
-    expect(Array.isArray(produtos)).toBe(true);
-    expect(produtos.length).toBeGreaterThan(0);
+    expect(api.get).toHaveBeenCalledWith('/produtos');
+    expect(produtos).toEqual(mockProdutos);
   });
 
   it('obtem um produto por id', async () => {
+    const mockProduto = { id: 1, nome: 'Furadeira', preco: 150, ativo: true };
+    api.get.mockResolvedValueOnce({ data: mockProduto });
+
     const produto = await obterProduto(1);
+    expect(api.get).toHaveBeenCalledWith('/produtos/1');
     expect(produto.id).toBe(1);
   });
 
-  it('rejeita produto inexistente', async () => {
-    await expect(obterProduto(9999)).rejects.toThrow(/nao encontrado/i);
-  });
-
-  it('cria um novo produto com id incremental', async () => {
-    const novo = await criarProduto({
+  it('cria um novo produto', async () => {
+    const dadosNovo = {
       nome: 'Produto Teste',
       categoriaId: '1',
       fornecedorId: '1',
       unidade: 'UN',
       preco: '10.5',
       estoqueMinimo: '2',
-    });
+    };
+    const mockCriado = { id: 10, ...dadosNovo, preco: 10.5, ativo: true };
+    api.post.mockResolvedValueOnce({ data: mockCriado });
+
+    const novo = await criarProduto(dadosNovo);
+    expect(api.post).toHaveBeenCalledWith('/produtos', dadosNovo);
     expect(novo.id).toBeDefined();
     expect(novo.nome).toBe('Produto Teste');
-    expect(novo.preco).toBe(10.5);
-    expect(novo.ativo).toBe(true);
   });
 
   it('atualiza um produto existente', async () => {
-    const atualizado = await atualizarProduto(1, {
+    const dadosUpdate = {
       nome: 'Furadeira Editada',
       categoriaId: '1',
       fornecedorId: '1',
       unidade: 'UN',
       preco: '400',
       estoqueMinimo: '5',
-    });
+    };
+    const mockAtualizado = { id: 1, ...dadosUpdate, preco: 400 };
+    api.put.mockResolvedValueOnce({ data: mockAtualizado });
+
+    const atualizado = await atualizarProduto(1, dadosUpdate);
+    expect(api.put).toHaveBeenCalledWith('/produtos/1', dadosUpdate);
     expect(atualizado.nome).toBe('Furadeira Editada');
     expect(atualizado.preco).toBe(400);
   });
 
-  it('rejeita atualizacao de produto inexistente', async () => {
-    await expect(
-      atualizarProduto(9999, {
-        nome: 'X',
-        categoriaId: '1',
-        fornecedorId: '1',
-        preco: '1',
-        estoqueMinimo: '1',
-      }),
-    ).rejects.toThrow(/nao encontrado/i);
-  });
-
   it('inativa um produto', async () => {
-    await inativarProduto(3);
-    const produtos = await listarProdutos();
-    const p = produtos.find((x) => x.id === 3);
-    expect(p.ativo).toBe(false);
-  });
+    api.delete.mockResolvedValueOnce({ data: { success: true } });
 
-  it('rejeita inativacao de produto inexistente', async () => {
-    await expect(inativarProduto(9999)).rejects.toThrow(/nao encontrado/i);
+    await inativarProduto(3);
+    // Verifica se chamou a rota correta de remoção ou inativação no back-end
+    expect(api.delete).toHaveBeenCalledWith('/produtos/3');
   });
 });

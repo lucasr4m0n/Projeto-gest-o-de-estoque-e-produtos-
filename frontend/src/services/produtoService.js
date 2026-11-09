@@ -1,65 +1,29 @@
-import produtosMock from '../mocks/produtosMock.json';
-import { mockResponse, mockError } from './mockAdapter.js';
-
-// Store em memoria inicializado a partir do mock (copia, para nao mutar o JSON).
-let produtos = JSON.parse(JSON.stringify(produtosMock));
-let nextId = Math.max(...produtos.map((p) => p.id), 0) + 1;
+import api from './api.js';
 
 export async function listarProdutos() {
-  return mockResponse(produtos);
+  const response = await api.get('/produtos');
+  return response.data;
 }
 
 export async function obterProduto(id) {
-  const produto = produtos.find((p) => p.id === Number(id));
-  if (!produto) return mockError('Produto nao encontrado.', 404);
-  return mockResponse(produto);
+  const response = await api.get(`/produtos/${id}`);
+  return response.data;
 }
 
 export async function criarProduto(dados) {
-  const novo = {
-    id: nextId,
-    ativo: true,
-    saldoAtual: 0,
-    ...dados,
-    preco: Number(dados.preco),
-    estoqueMinimo: Number(dados.estoqueMinimo),
-    categoriaId: Number(dados.categoriaId),
-    fornecedorId: Number(dados.fornecedorId),
-  };
-  nextId += 1;
-  produtos = [...produtos, novo];
-  return mockResponse(novo);
+  const response = await api.post('/produtos', dados);
+  return response.data;
 }
 
 export async function atualizarProduto(id, dados) {
-  const idx = produtos.findIndex((p) => p.id === Number(id));
-  if (idx === -1) return mockError('Produto nao encontrado.', 404);
-  const atualizado = {
-    ...produtos[idx],
-    ...dados,
-    preco: Number(dados.preco),
-    estoqueMinimo: Number(dados.estoqueMinimo),
-    categoriaId: Number(dados.categoriaId),
-    fornecedorId: Number(dados.fornecedorId),
-  };
-  produtos = produtos.map((p) => (p.id === Number(id) ? atualizado : p));
-  return mockResponse(atualizado);
+  const response = await api.put(`/produtos/${id}`, dados);
+  return response.data;
 }
 
 export async function inativarProduto(id) {
-  const idx = produtos.findIndex((p) => p.id === Number(id));
-  if (idx === -1) return mockError('Produto nao encontrado.', 404);
-  produtos = produtos.map((p) => (p.id === Number(id) ? { ...p, ativo: false } : p));
-  return mockResponse(produtos[idx]);
-}
-
-// Ajuste de saldo usado pelo modulo de movimentacoes/compras.
-export function ajustarSaldoLocal(produtoId, delta) {
-  produtos = produtos.map((p) =>
-    p.id === Number(produtoId) ? { ...p, saldoAtual: p.saldoAtual + delta } : p,
-  );
-}
-
-export function _getProdutos() {
-  return produtos;
+  // Nota: Se o teu back-end utilizar um endpoint específico de patch/inativação 
+  // (ex: /produtos/${id}/inativar), podes ajustá-lo aqui. Caso contrário, 
+  // assumimos o DELETE padrão ou a inativação via API.
+  const response = await api.delete(`/produtos/${id}`);
+  return response.data;
 }

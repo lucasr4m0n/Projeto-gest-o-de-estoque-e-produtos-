@@ -1,19 +1,18 @@
-// Stub do recharts para o ambiente de testes: renderiza containers simples
-// sem depender de medicao de dimensoes (indisponivel no jsdom).
-const Passthrough = ({ children }) => <div>{children}</div>;
+const Stub = ({ children }) => <div>{children}</div>;
+const Empty = () => null;
 
-export const ResponsiveContainer = Passthrough;
-export const BarChart = Passthrough;
-export const LineChart = Passthrough;
-export const PieChart = Passthrough;
-export const AreaChart = Passthrough;
-export const Bar = () => null;
-export const Line = () => null;
-export const Area = () => null;
-export const Pie = () => null;
-export const Cell = () => null;
-export const XAxis = () => null;
-export const YAxis = () => null;
-export const CartesianGrid = () => null;
-export const Tooltip = () => null;
-export const Legend = () => null;
+export const ResponsiveContainer = Stub;
+export const BarChart = Stub;
+export const LineChart = Stub;
+export const PieChart = Stub;
+export const AreaChart = Stub;
+export const Bar = Empty;
+export const Line = Empty;
+export const Pie = Empty;
+export const Area = Empty;
+export const Cell = Empty;
+export const XAxis = Empty;
+export const YAxis = Empty;
+export const CartesianGrid = Empty;
+export const Tooltip = Empty;
+export const Legend = Empty;

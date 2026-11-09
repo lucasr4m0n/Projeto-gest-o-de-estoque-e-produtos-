@@ -1,14 +1,10 @@
 import axios from 'axios';
 import { TOKEN_KEY, USER_KEY } from './storageKeys.js';
+import { API_URL } from './env.js';
 
 export { TOKEN_KEY, USER_KEY };
 
-// URL base da API (Spring Boot). Definida em .env como VITE_API_URL.
-const baseURL =
-  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) ||
-  'http://localhost:8080/api';
-
-const api = axios.create({ baseURL });
+const api = axios.create({ baseURL: API_URL });
 
 // Interceptor de requisicao: injeta o cabecalho Authorization em chamadas privadas.
 api.interceptors.request.use((config) => {
