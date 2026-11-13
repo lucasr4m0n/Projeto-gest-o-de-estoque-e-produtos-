@@ -83,7 +83,7 @@ public class PedidoCompraService {
         validarTransicao(pedido.getStatus(), novoStatus);
 
         if (novoStatus == StatusPedido.ENTREGUE) {
-            validarComprador(usuario);
+            validarAdmin(usuario);
             processarEntrega(pedido, usuario);
         }
 
@@ -126,9 +126,9 @@ public class PedidoCompraService {
         }
     }
 
-    private void validarComprador(Usuario usuario) {
-        if (usuario == null || !Boolean.TRUE.equals(usuario.getAtivo()) || usuario.getPerfil() != TipoPerfil.COMPRADOR) {
-            throw new RegraNegocioException("A entrega de pedido deve ser realizada por um usuario ativo com perfil COMPRADOR.");
+    private void validarAdmin(Usuario usuario) {
+        if (usuario == null || !Boolean.TRUE.equals(usuario.getAtivo()) || usuario.getPerfil() != TipoPerfil.ADMIN) {
+            throw new RegraNegocioException("A entrega de pedido deve ser realizada por um usuario ativo com perfil ADMIN.");
         }
     }
 

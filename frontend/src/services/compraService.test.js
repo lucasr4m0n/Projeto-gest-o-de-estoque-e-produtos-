@@ -7,7 +7,6 @@ import {
 } from './compraService.js';
 import api from './api.js';
 
-// Mock do cliente Axios centralizado
 jest.mock('./api.js', () => ({
   get: jest.fn(),
   post: jest.fn(),
@@ -32,50 +31,54 @@ describe('calcularTotal (Função Pura)', () => {
 });
 
 describe('compraService (com Axios Mockado)', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('lista pedidos da API', async () => {
-    const mockPedidos = [
-      {
-        id: 1,
-        fornecedorId: 2,
-        fornecedorNome: 'EletroSul',
-        status: 'SOLICITADO',
-        itens: [{ produtoId: 7, quantidade: 2, precoUnitario: 10 }],
-      },
-    ];
-    api.get.mockResolvedValueOnce({ data: mockPedidos });
+  it('lista pedidos e traduz dataPedido para data', async () => {
+    api.get.mockResolvedValueOnce({
+      data: [
+        {
+          id: 1,
+          fornecedorId: 2,
+          fornecedorNome: 'EletroSul',
+          status: 'SOLICITADO',
+          dataPedido: '2026-11-01T10:00:00-03:00',
+          itens: [{ id: 1, produtoId: 7, produtoNome: 'Fita', quantidade: 2, precoUnitario: 10 }],
+          total: 20,
+        },
+      ],
+    });
 
     const pedidos = await listarPedidos();
+
     expect(api.get).toHaveBeenCalledWith('/compras');
-    expect(pedidos.length).toBeGreaterThan(0);
+    expect(pedidos[0].data).toBe('2026-11-01T10:00:00-03:00');
+    expect(pedidos[0].fornecedorNome).toBe('EletroSul');
   });
 
-  it('cria um pedido de compra', async () => {
+  it('cria um pedido enviando apenas os campos da API', async () => {
     const dadosPedido = {
-      fornecedorId: 2,
+      fornecedorId: '2',
       fornecedorNome: 'EletroSul',
       itens: [{ produtoId: 7, produtoNome: 'Fita', quantidade: 10, precoUnitario: 6.9 }],
     };
-    const mockResposta = { id: 1, ...dadosPedido, status: 'SOLICITADO' };
-    api.post.mockResolvedValueOnce({ data: mockResposta });
+    api.post.mockResolvedValueOnce({ data: { id: 1, status: 'RASCUNHO' } });
 
     const pedido = await criarPedido(dadosPedido);
-    expect(api.post).toHaveBeenCalledWith('/compras', dadosPedido);
-    expect(pedido.status).toBe('SOLICITADO');
+
+    expect(api.post).toHaveBeenCalledWith('/compras', {
+      fornecedorId: 2,
+      itens: [{ produtoId: 7, quantidade: 10, precoUnitario: 6.9 }],
+    });
+    expect(pedido.status).toBe('RASCUNHO');
   });
 
   it('atualiza o status de um pedido', async () => {
-    const mockAtualizado = { id: 1, status: 'ENTREGUE' };
-    api.patch.mockResolvedValueOnce({ data: mockAtualizado });
+    api.patch.mockResolvedValueOnce({ data: { id: 1, status: 'ENTREGUE' } });
 
     const resultado = await atualizarStatus(1, 'ENTREGUE');
+
     expect(api.patch).toHaveBeenCalledWith(
       '/compras/1/status',
       { status: 'ENTREGUE' },
-      expect.any(Object) // Valida que os headers (X-Usuario-Id) foram passados
+      expect.any(Object),
     );
     expect(resultado.status).toBe('ENTREGUE');
   });

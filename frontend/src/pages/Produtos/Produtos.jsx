@@ -1,50 +1,57 @@
-import { useEffect, useMemo, useState } from 'react';
-import Table from '../../components/Table.jsx';
-import Badge from '../../components/Badge.jsx';
-import Button from '../../components/Button.jsx';
-import Input from '../../components/Input.jsx';
-import Select from '../../components/Select.jsx';
-import Modal from '../../components/Modal.jsx';
-import Pagination from '../../components/Pagination.jsx';
-import { useFetch } from '../../hooks/useFetch.js';
-import { useToast } from '../../hooks/useToast.js';
+import { useEffect, useMemo, useState } from "react";
+import Table from "../../components/Table.jsx";
+import Badge from "../../components/Badge.jsx";
+import Button from "../../components/Button.jsx";
+import Input from "../../components/Input.jsx";
+import Select from "../../components/Select.jsx";
+import Modal from "../../components/Modal.jsx";
+import Pagination from "../../components/Pagination.jsx";
+import { useFetch } from "../../hooks/useFetch.js";
+import { useToast } from "../../hooks/useToast.js";
 import {
   listarProdutos,
   criarProduto,
   atualizarProduto,
   inativarProduto,
-} from '../../services/produtoService.js';
-import { listarCategorias } from '../../services/categoriaService.js';
-import { listarFornecedores } from '../../services/fornecedorService.js';
-import { formatCurrency, isEstoqueCritico } from '../../utils/formatters.js';
-import { isRequired, isPositiveNumber } from '../../utils/validators.js';
+  ativarProduto,
+} from "../../services/produtoService.js";
+import { listarCategorias } from "../../services/categoriaService.js";
+import { formatCurrency, isEstoqueCritico } from "../../utils/formatters.js";
+import { isRequired, isPositiveNumber } from "../../utils/validators.js";
 
 const PAGE_SIZE = 5;
 
+const UNIDADES = ["UN", "KG", "SC", "CX", "PCT", "L", "M"];
+
 const FORM_VAZIO = {
-  nome: '',
-  descricao: '',
-  categoriaId: '',
-  fornecedorId: '',
-  unidade: 'UN',
-  preco: '',
-  estoqueMinimo: '',
+  nome: "",
+  descricao: "",
+  categoriaId: "",
+  unidade: "UN",
+  preco: "",
+  estoqueMinimo: "",
 };
 
 export default function Produtos() {
   const toast = useToast();
-  const { data: produtos, loading, refetch } = useFetch(listarProdutos, [], {
-    onError: (err) => toast.error(err.message || 'Falha ao carregar produtos.'),
+  const {
+    data: produtos,
+    loading,
+    refetch,
+  } = useFetch(listarProdutos, [], {
+    onError: (err) => toast.error(err.message || "Falha ao carregar produtos."),
   });
-  const { data: categorias, loading: loadingCategorias } = useFetch(listarCategorias, [], {
-    onError: (err) => toast.error(err.message || 'Falha ao carregar categorias.'),
-  });
-  const { data: fornecedores, loading: loadingFornecedores } = useFetch(listarFornecedores, [], {
-    onError: (err) => toast.error(err.message || 'Falha ao carregar fornecedores.'),
-  });
+  const { data: categorias, loading: loadingCategorias } = useFetch(
+    listarCategorias,
+    [],
+    {
+      onError: (err) =>
+        toast.error(err.message || "Falha ao carregar categorias."),
+    },
+  );
 
-  const [busca, setBusca] = useState('');
-  const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [busca, setBusca] = useState("");
+  const [filtroCategoria, setFiltroCategoria] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState(FORM_VAZIO);
@@ -64,7 +71,8 @@ export default function Produtos() {
   const listaFiltrada = useMemo(() => {
     return (produtos || []).filter((p) => {
       const casaBusca = p.nome.toLowerCase().includes(busca.toLowerCase());
-      const casaCategoria = !filtroCategoria || p.categoriaId === Number(filtroCategoria);
+      const casaCategoria =
+        !filtroCategoria || p.categoriaId === Number(filtroCategoria);
       return casaBusca && casaCategoria;
     });
   }, [produtos, busca, filtroCategoria]);
@@ -91,10 +99,9 @@ export default function Produtos() {
     setEditando(produto);
     setForm({
       nome: produto.nome,
-      descricao: produto.descricao || '',
+      descricao: produto.descricao || "",
       categoriaId: String(produto.categoriaId),
-      fornecedorId: String(produto.fornecedorId),
-      unidade: produto.unidade,
+      unidade: UNIDADES.includes(produto.unidade) ? produto.unidade : "UN",
       preco: String(produto.preco),
       estoqueMinimo: String(produto.estoqueMinimo),
     });
@@ -104,12 +111,13 @@ export default function Produtos() {
 
   function validar() {
     const next = {};
-    if (!isRequired(form.nome)) next.nome = 'Nome obrigatorio.';
-    if (!isRequired(form.categoriaId)) next.categoriaId = 'Selecione a categoria.';
-    if (!isRequired(form.fornecedorId)) next.fornecedorId = 'Selecione o fornecedor.';
-    if (!isPositiveNumber(form.preco)) next.preco = 'Preco deve ser maior que zero.';
-    if (Number(form.estoqueMinimo) < 0 || form.estoqueMinimo === '')
-      next.estoqueMinimo = 'Informe o estoque minimo.';
+    if (!isRequired(form.nome)) next.nome = "Nome obrigatorio.";
+    if (!isRequired(form.categoriaId))
+      next.categoriaId = "Selecione a categoria.";
+    if (!isPositiveNumber(form.preco))
+      next.preco = "Preco deve ser maior que zero.";
+    if (Number(form.estoqueMinimo) < 0 || form.estoqueMinimo === "")
+      next.estoqueMinimo = "Informe o estoque minimo.";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -120,15 +128,15 @@ export default function Produtos() {
     try {
       if (editando) {
         await atualizarProduto(editando.id, form);
-        toast.success('Produto atualizado.');
+        toast.success("Produto atualizado.");
       } else {
         await criarProduto(form);
-        toast.success('Produto cadastrado.');
+        toast.success("Produto cadastrado.");
       }
       setModalAberto(false);
       await refetch();
     } catch (err) {
-      toast.error(err.message || 'Falha ao salvar produto.');
+      toast.error(err.message || "Falha ao salvar produto.");
     } finally {
       setSalvando(false);
     }
@@ -141,7 +149,20 @@ export default function Produtos() {
       toast.info(`Produto "${produto.nome}" inativado.`);
       await refetch();
     } catch (err) {
-      toast.error(err.message || 'Falha ao inativar.');
+      toast.error(err.message || "Falha ao inativar.");
+    } finally {
+      setInativandoId(null);
+    }
+  }
+
+  async function ativar(produto) {
+    setInativandoId(produto.id);
+    try {
+      await ativarProduto(produto.id);
+      toast.success(`Produto "${produto.nome}" ativado.`);
+      await refetch();
+    } catch (err) {
+      toast.error(err.message || "Falha ao ativar.");
     } finally {
       setInativandoId(null);
     }
@@ -149,39 +170,43 @@ export default function Produtos() {
 
   const colunas = [
     {
-      key: 'nome',
-      header: 'Produto',
+      key: "nome",
+      header: "Produto",
       render: (p) => (
         <div className="flex items-center gap-2">
           <div>
             <p className="font-medium text-base-900">{p.nome}</p>
-            <p className="text-xs text-base-400">{nomeCategoria[p.categoriaId] || '-'}</p>
+            <p className="text-xs text-base-400">
+              {nomeCategoria[p.categoriaId] || "-"}
+            </p>
           </div>
           {p.ativo === false && <Badge tone="neutral">Inativo</Badge>}
         </div>
       ),
     },
     {
-      key: 'saldoAtual',
-      header: 'Saldo',
+      key: "saldoAtual",
+      header: "Saldo",
       render: (p) => (
         <span className="inline-flex items-center gap-2">
           {p.saldoAtual} {p.unidade}
-          {isEstoqueCritico(p.saldoAtual, p.estoqueMinimo) && <Badge tone="danger">Critico</Badge>}
+          {isEstoqueCritico(p.saldoAtual, p.estoqueMinimo) && (
+            <Badge tone="danger">Critico</Badge>
+          )}
         </span>
       ),
     },
-    { key: 'estoqueMinimo', header: 'Min.' },
-    { key: 'preco', header: 'Preco', render: (p) => formatCurrency(p.preco) },
+    { key: "estoqueMinimo", header: "Min." },
+    { key: "preco", header: "Preco", render: (p) => formatCurrency(p.preco) },
     {
-      key: 'acoes',
-      header: 'Acoes',
+      key: "acoes",
+      header: "Acoes",
       render: (p) => (
         <div className="flex gap-2">
           <Button variant="ghost" onClick={() => abrirEdicao(p)}>
             Editar
           </Button>
-          {p.ativo !== false && (
+          {p.ativo !== false ? (
             <Button
               variant="ghost"
               className="text-danger-600"
@@ -189,6 +214,14 @@ export default function Produtos() {
               loading={inativandoId === p.id}
             >
               Inativar
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              onClick={() => ativar(p)}
+              loading={inativandoId === p.id}
+            >
+              Ativar
             </Button>
           )}
         </div>
@@ -217,9 +250,16 @@ export default function Produtos() {
         <Select
           value={filtroCategoria}
           onChange={(e) => setFiltroCategoria(e.target.value)}
-          placeholder={loadingCategorias ? 'Carregando categorias...' : 'Todas as categorias'}
+          placeholder={
+            loadingCategorias
+              ? "Carregando categorias..."
+              : "Todas as categorias"
+          }
           disabled={loadingCategorias}
-          options={(categorias || []).map((c) => ({ value: String(c.id), label: c.nome }))}
+          options={(categorias || []).map((c) => ({
+            value: String(c.id),
+            label: c.nome,
+          }))}
           className="w-full sm:w-56"
           aria-label="Filtrar por categoria"
         />
@@ -238,7 +278,7 @@ export default function Produtos() {
 
       <Modal
         open={modalAberto}
-        title={editando ? 'Editar produto' : 'Novo produto'}
+        title={editando ? "Editar produto" : "Novo produto"}
         onClose={() => setModalAberto(false)}
         footer={
           <>
@@ -248,7 +288,7 @@ export default function Produtos() {
             <Button
               onClick={salvar}
               loading={salvando}
-              disabled={loadingCategorias || loadingFornecedores}
+              disabled={loadingCategorias}
             >
               Salvar
             </Button>
@@ -267,31 +307,26 @@ export default function Produtos() {
             value={form.descricao}
             onChange={(e) => setForm({ ...form, descricao: e.target.value })}
           />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Select
-              label="Categoria"
-              value={form.categoriaId}
-              onChange={(e) => setForm({ ...form, categoriaId: e.target.value })}
-              options={(categorias || []).map((c) => ({ value: String(c.id), label: c.nome }))}
-              placeholder={loadingCategorias ? 'Carregando categorias...' : 'Selecione...'}
-              disabled={loadingCategorias}
-              error={errors.categoriaId}
-            />
-            <Select
-              label="Fornecedor"
-              value={form.fornecedorId}
-              onChange={(e) => setForm({ ...form, fornecedorId: e.target.value })}
-              options={(fornecedores || []).map((f) => ({ value: String(f.id), label: f.nome }))}
-              placeholder={loadingFornecedores ? 'Carregando fornecedores...' : 'Selecione...'}
-              disabled={loadingFornecedores}
-              error={errors.fornecedorId}
-            />
-          </div>
+          <Select
+            label="Categoria"
+            value={form.categoriaId}
+            onChange={(e) => setForm({ ...form, categoriaId: e.target.value })}
+            options={(categorias || []).map((c) => ({
+              value: String(c.id),
+              label: c.nome,
+            }))}
+            placeholder={
+              loadingCategorias ? "Carregando categorias..." : "Selecione..."
+            }
+            disabled={loadingCategorias}
+            error={errors.categoriaId}
+          />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <Input
+            <Select
               label="Unidade"
               value={form.unidade}
               onChange={(e) => setForm({ ...form, unidade: e.target.value })}
+              options={UNIDADES.map((u) => ({ value: u, label: u }))}
             />
             <Input
               label="Preco (R$)"
@@ -307,7 +342,9 @@ export default function Produtos() {
               type="number"
               min="0"
               value={form.estoqueMinimo}
-              onChange={(e) => setForm({ ...form, estoqueMinimo: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, estoqueMinimo: e.target.value })
+              }
               error={errors.estoqueMinimo}
             />
           </div>
