@@ -7,7 +7,7 @@ Projeto final desenvolvido em grupo (7 integrantes) para a formação **Full Sta
 - **[`backend/`](./backend)** — API REST em **Java 21 + Spring Boot**, autenticação JWT, regras de negócio e documentação via Swagger.
 - **[`frontend/`](./frontend)** — Interface web em **React 18 + Vite + Tailwind CSS**, gráficos com Recharts, consumo da API via Axios e testes automatizados com Jest e Testing Library.
 - **[`database/`](./database)** — Scripts SQL (`schema.sql` e `seed-dados-ficticios.sql`) para criação das tabelas, enums e carga inicial no PostgreSQL.
-- **`docker-compose.yml`** — Configuração do container PostgreSQL 15 para ambiente local[cite: 1].
+- **`docker-compose.yml`** — Configuração do container PostgreSQL 15 para ambiente local.
 
 ## Repositórios de deploy e documentação complementar
 
