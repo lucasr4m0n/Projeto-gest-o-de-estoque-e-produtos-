@@ -4,9 +4,9 @@ Projeto final desenvolvido em grupo (7 integrantes) para a formação **Full Sta
 
 ## Estrutura do monorepo
 
-- **[`backend/`](./backend)** — API REST em **Java 21 + Spring Boot**, autenticação JWT, regras de negócio e documentação via Swagger[cite: 1].
-- **[`frontend/`](./frontend)** — Interface web em **React 18 + Vite + Tailwind CSS**, gráficos com Recharts, consumo da API via Axios e testes automatizados com Jest e Testing Library[cite: 1].
-- **[`database/`](./database)** — Scripts SQL (`schema.sql` e `seed-dados-ficticios.sql`) para criação das tabelas, enums e carga inicial no PostgreSQL[cite: 1].
+- **[`backend/`](./backend)** — API REST em **Java 21 + Spring Boot**, autenticação JWT, regras de negócio e documentação via Swagger.
+- **[`frontend/`](./frontend)** — Interface web em **React 18 + Vite + Tailwind CSS**, gráficos com Recharts, consumo da API via Axios e testes automatizados com Jest e Testing Library.
+- **[`database/`](./database)** — Scripts SQL (`schema.sql` e `seed-dados-ficticios.sql`) para criação das tabelas, enums e carga inicial no PostgreSQL.
 - **`docker-compose.yml`** — Configuração do container PostgreSQL 15 para ambiente local[cite: 1].
 
 ## Repositórios de deploy e documentação complementar
@@ -17,5 +17,5 @@ A versão publicada e a documentação de deploy de cada camada também são man
 
 ## Como rodar o projeto localmente
 
-1. Na raiz do projeto, suba o banco de dados com `docker compose up -d` e siga as instruções em [`backend/README.md`](./backend/README.md)[cite: 1].
-2. Instale as dependências e inicie a aplicação web seguindo as instruções em [`frontend/README.md`](./frontend/README.md)[cite: 1].
+1. Na raiz do projeto, suba o banco de dados com `docker compose up -d` e siga as instruções em [`backend/README.md`](./backend/README.md).
+2. Instale as dependências e inicie a aplicação web seguindo as instruções em [`frontend/README.md`](./frontend/README.md).
